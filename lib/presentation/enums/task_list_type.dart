@@ -1,0 +1,1 @@
+enum TaskListType { pending, completed }
