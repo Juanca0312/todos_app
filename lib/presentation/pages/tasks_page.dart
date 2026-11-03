@@ -1,39 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:todos_app/domain/entities/task.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todos_app/presentation/enums/task_list_type.dart';
+import 'package:todos_app/presentation/providers/tasks_provider.dart';
 import 'package:todos_app/presentation/widgets/tasks_list.dart';
 
-class TasksPage extends StatelessWidget {
+class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final tasks = [
-      Task(
-        id: '1',
-        title: 'Aprender Riverpod',
-        description: 'Entender AsyncNotifier y sus estados',
-        isCompleted: false,
-        createdAt: DateTime.now(),
-        completedAt: null,
-      ),
-      Task(
-        id: '2',
-        title: 'Implementar Hive',
-        description: 'Persistencia local de tareas',
-        isCompleted: true,
-        createdAt: DateTime.now(),
-        completedAt: DateTime.now(),
-      ),
-      Task(
-        id: '3',
-        title: 'Crear pantalla de listado',
-        description: 'Diseñar la interfaz principal',
-        isCompleted: false,
-        createdAt: DateTime.now(),
-        completedAt: null,
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasksAsync = ref.watch(tasksProvider);
 
     return DefaultTabController(
       length: 2,
@@ -47,11 +23,27 @@ class TasksPage extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            TasksList(tasks: tasks, type: TaskListType.pending),
-            TasksList(tasks: tasks, type: TaskListType.completed),
-          ],
+        body: tasksAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Ocurrió un error al cargar las tareas.'),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(tasksProvider),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
+          data: (tasks) => TabBarView(
+            children: [
+              TasksList(tasks: tasks, type: TaskListType.pending),
+              TasksList(tasks: tasks, type: TaskListType.completed),
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
