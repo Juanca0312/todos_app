@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos_app/domain/entities/task.dart';
 import 'package:todos_app/presentation/enums/task_list_type.dart';
-import 'package:todos_app/presentation/widgets/task_tile.dart';
+import 'package:todos_app/presentation/widgets/widgets.dart';
 
 class TasksList extends StatelessWidget {
   const TasksList({
@@ -27,10 +27,17 @@ class TasksList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemCount: visibleTasks.length,
       itemBuilder: (context, index) {
+        final task = visibleTasks[index];
         return TaskTile(
-          task: visibleTasks[index],
-          onCompletionChanged: (_) {
-            onCompletionChanged(visibleTasks[index]);
+          task: task,
+          onCompletionChanged: (_) => onCompletionChanged(task),
+          onEdit: () {
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => TaskFormSheet(task: task),
+            );
           },
         );
       },

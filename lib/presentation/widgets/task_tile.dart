@@ -3,10 +3,16 @@ import 'package:todos_app/core/extensions/date_time_extension.dart';
 import 'package:todos_app/domain/entities/task.dart';
 
 class TaskTile extends StatelessWidget {
-  const TaskTile({super.key, required this.task, required this.onCompletionChanged});
+  const TaskTile({
+    super.key,
+    required this.task,
+    required this.onCompletionChanged,
+    required this.onEdit,
+  });
 
   final Task task;
   final ValueChanged<bool> onCompletionChanged;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +51,13 @@ class TaskTile extends StatelessWidget {
             ? null
             : PopupMenuButton<String>(
                 onSelected: (value) {
-                  // TODO: Implementar la lógica para editar o eliminar la tarea.
+                  switch (value) {
+                    case 'edit':
+                      onEdit();
+                    case 'delete':
+                      // Handle delete action
+                      break;
+                  }
                 },
                 itemBuilder: (context) => const [
                   PopupMenuItem(value: 'edit', child: Text('Editar')),
