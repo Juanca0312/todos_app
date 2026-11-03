@@ -8,11 +8,13 @@ class TaskTile extends StatelessWidget {
     required this.task,
     required this.onCompletionChanged,
     required this.onEdit,
+    required this.onDelete,
   });
 
   final Task task;
   final ValueChanged<bool> onCompletionChanged;
   final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +57,7 @@ class TaskTile extends StatelessWidget {
                     case 'edit':
                       onEdit();
                     case 'delete':
-                      // Handle delete action
-                      break;
+                      onDelete();
                   }
                 },
                 itemBuilder: (context) => const [

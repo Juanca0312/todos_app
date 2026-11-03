@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:todos_app/core/widgets/app_snackbar.dart';
+import 'package:todos_app/domain/entities/task.dart';
 import 'package:todos_app/presentation/enums/task_list_type.dart';
+import 'package:todos_app/presentation/providers/task_form_provider.dart';
 import 'package:todos_app/presentation/providers/tasks_provider.dart';
 import 'package:todos_app/presentation/widgets/widgets.dart';
 
@@ -27,6 +31,7 @@ class TasksPage extends ConsumerWidget {
                 onCompletionChanged: (task) {
                   ref.read(tasksProvider.notifier).toggleTaskCompletion(task);
                 },
+                onDelete: (task) => _deleteTask(context, ref, task),
               ),
               TasksList(
                 tasks: tasks,
@@ -34,6 +39,7 @@ class TasksPage extends ConsumerWidget {
                 onCompletionChanged: (task) {
                   ref.read(tasksProvider.notifier).toggleTaskCompletion(task);
                 },
+                onDelete: (task) => _deleteTask(context, ref, task),
               ),
             ],
           ),
@@ -51,5 +57,19 @@ class TasksPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _deleteTask(BuildContext context, WidgetRef ref, Task task) async {
+    try {
+      await ref.read(taskFormProvider.notifier).deleteTask(task.id);
+
+      if (!context.mounted) return;
+
+      AppSnackBar.success(context, message: 'Tarea eliminada exitosamente.');
+    } catch (_) {
+      if (!context.mounted) return;
+
+      AppSnackBar.error(context, message: 'Error al eliminar la tarea. Intenta nuevamente.');
+    }
   }
 }

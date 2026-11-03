@@ -3,3 +3,4 @@ export 'tasks_list.dart';
 export 'tasks_tab_bar.dart';
 export 'task_tile.dart';
 export 'task_form_sheet.dart';
+export 'task_delete_dialog.dart';

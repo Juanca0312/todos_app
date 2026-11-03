@@ -9,11 +9,13 @@ class TasksList extends StatelessWidget {
     required this.tasks,
     required this.type,
     required this.onCompletionChanged,
+    required this.onDelete,
   });
 
   final List<Task> tasks;
   final TaskListType type;
   final ValueChanged<Task> onCompletionChanged;
+  final ValueChanged<Task> onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,16 @@ class TasksList extends StatelessWidget {
               useSafeArea: true,
               builder: (_) => TaskFormSheet(task: task),
             );
+          },
+          onDelete: () async {
+            final shouldDelete = await showDialog<bool>(
+              context: context,
+              builder: (_) => TaskDeleteDialog(taskTitle: task.title),
+            );
+
+            if (shouldDelete == true) {
+              onDelete(task);
+            }
           },
         );
       },

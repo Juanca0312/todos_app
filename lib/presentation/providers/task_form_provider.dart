@@ -25,6 +25,10 @@ class TaskFormNotifier extends AsyncNotifier<void> {
     await _execute(() => _repository.updateTask(params));
   }
 
+  Future<void> deleteTask(String id) async {
+    await _execute(() => _repository.deleteTask(id));
+  }
+
   Future<void> _execute(Future<void> Function() action) async {
     state = const AsyncLoading();
 
