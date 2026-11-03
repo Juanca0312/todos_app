@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todos_app/presentation/enums/task_list_type.dart';
 import 'package:todos_app/presentation/providers/tasks_provider.dart';
-import 'package:todos_app/presentation/widgets/tasks_list.dart';
+import 'package:todos_app/presentation/widgets/widgets.dart';
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
@@ -14,30 +14,11 @@ class TasksPage extends ConsumerWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Mis tareas'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Pendientes'),
-              Tab(text: 'Completadas'),
-            ],
-          ),
-        ),
+        appBar: AppBar(title: const Text('Mis tareas'), bottom: TasksTabBar()),
         body: tasksAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Ocurrió un error al cargar las tareas.'),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(tasksProvider),
-                  child: const Text('Reintentar'),
-                ),
-              ],
-            ),
-          ),
+          error: (error, stackTrace) =>
+              TasksErrorView(onRetry: () => ref.invalidate(tasksProvider)),
           data: (tasks) => TabBarView(
             children: [
               TasksList(tasks: tasks, type: TaskListType.pending),
