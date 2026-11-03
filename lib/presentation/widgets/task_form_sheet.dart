@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todos_app/core/constants/app_spacing.dart';
 import 'package:todos_app/core/widgets/app_snackbar.dart';
 
 import 'package:todos_app/domain/params/create_task_params.dart';
@@ -65,19 +66,19 @@ class _TaskFormSheetState extends ConsumerState<TaskFormSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text('Nueva tarea', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl),
               _TaskFormFields(
                 titleController: _titleController,
                 descriptionController: _descriptionController,
                 enabled: !isLoading,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               ElevatedButton(
                 onPressed: isLoading ? null : _createTask,
                 child: isLoading
                     ? const SizedBox(
                         width: 20,
-                        height: 20,
+                        height: AppSpacing.xl,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Text('Guardar tarea'),
@@ -123,7 +124,7 @@ class _TaskFormFields extends StatelessWidget {
             return null;
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         TextFormField(
           controller: descriptionController,
           enabled: enabled,
