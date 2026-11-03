@@ -3,9 +3,10 @@ import 'package:todos_app/core/extensions/date_time_extension.dart';
 import 'package:todos_app/domain/entities/task.dart';
 
 class TaskTile extends StatelessWidget {
-  const TaskTile({super.key, required this.task});
+  const TaskTile({super.key, required this.task, required this.onCompletionChanged});
 
   final Task task;
+  final ValueChanged<bool> onCompletionChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,9 @@ class TaskTile extends StatelessWidget {
         leading: Checkbox(
           value: isCompleted,
           onChanged: (value) {
-            // TODO: Implementar la lógica para marcar como completada o pendiente.
+            if (value != null) {
+              onCompletionChanged(value);
+            }
           },
         ),
         title: Text(

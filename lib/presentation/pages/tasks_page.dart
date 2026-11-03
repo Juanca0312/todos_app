@@ -21,8 +21,20 @@ class TasksPage extends ConsumerWidget {
               TasksErrorView(onRetry: () => ref.invalidate(tasksProvider)),
           data: (tasks) => TabBarView(
             children: [
-              TasksList(tasks: tasks, type: TaskListType.pending),
-              TasksList(tasks: tasks, type: TaskListType.completed),
+              TasksList(
+                tasks: tasks,
+                type: TaskListType.pending,
+                onCompletionChanged: (task) {
+                  ref.read(tasksProvider.notifier).toggleTaskCompletion(task);
+                },
+              ),
+              TasksList(
+                tasks: tasks,
+                type: TaskListType.completed,
+                onCompletionChanged: (task) {
+                  ref.read(tasksProvider.notifier).toggleTaskCompletion(task);
+                },
+              ),
             ],
           ),
         ),

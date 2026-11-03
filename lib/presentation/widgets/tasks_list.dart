@@ -4,10 +4,16 @@ import 'package:todos_app/presentation/enums/task_list_type.dart';
 import 'package:todos_app/presentation/widgets/task_tile.dart';
 
 class TasksList extends StatelessWidget {
-  const TasksList({super.key, required this.tasks, required this.type});
+  const TasksList({
+    super.key,
+    required this.tasks,
+    required this.type,
+    required this.onCompletionChanged,
+  });
 
   final List<Task> tasks;
   final TaskListType type;
+  final ValueChanged<Task> onCompletionChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,12 @@ class TasksList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemCount: visibleTasks.length,
       itemBuilder: (context, index) {
-        return TaskTile(task: visibleTasks[index]);
+        return TaskTile(
+          task: visibleTasks[index],
+          onCompletionChanged: (_) {
+            onCompletionChanged(visibleTasks[index]);
+          },
+        );
       },
     );
   }
@@ -40,6 +51,7 @@ class TasksList extends StatelessWidget {
       case TaskListType.pending:
         return tasks.where((task) => !task.isCompleted).toList();
       case TaskListType.completed:
+        tasks.sort((a, b) => b.completedAt?.compareTo(a.completedAt ?? DateTime.now()) ?? 0);
         return tasks.where((task) => task.isCompleted).toList();
     }
   }
