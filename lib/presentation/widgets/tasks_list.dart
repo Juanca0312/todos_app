@@ -49,10 +49,12 @@ class TasksList extends StatelessWidget {
   List<Task> get filteredTasks {
     switch (type) {
       case TaskListType.pending:
+        tasks.sort((a, b) => a.createdAt.compareTo(b.createdAt));
         return tasks.where((task) => !task.isCompleted).toList();
       case TaskListType.completed:
-        tasks.sort((a, b) => b.completedAt?.compareTo(a.completedAt ?? DateTime.now()) ?? 0);
-        return tasks.where((task) => task.isCompleted).toList();
+        final completedTasks = tasks.where((task) => task.isCompleted).toList();
+        completedTasks.sort((a, b) => b.completedAt!.compareTo(a.completedAt!));
+        return completedTasks;
     }
   }
 }

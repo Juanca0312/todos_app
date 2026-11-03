@@ -30,6 +30,6 @@ class TaskModel {
     'description': description,
     'isCompleted': isCompleted,
     'createdAt': createdAt.toIso8601String(),
-    if (completedAt != null) 'completedAt': completedAt!.toIso8601String(),
+    'completedAt': completedAt?.toIso8601String(),
   };
 }
