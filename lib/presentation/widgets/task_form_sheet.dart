@@ -1,0 +1,117 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:todos_app/domain/params/create_task_params.dart';
+import 'package:todos_app/presentation/providers/task_form_provider.dart';
+
+class TaskFormSheet extends ConsumerStatefulWidget {
+  const TaskFormSheet({super.key});
+
+  @override
+  ConsumerState<TaskFormSheet> createState() => _TaskFormSheetState();
+}
+
+class _TaskFormSheetState extends ConsumerState<TaskFormSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createTask() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final params = CreateTaskParams(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+    );
+
+    try {
+      await ref.read(taskFormProvider.notifier).createTask(params);
+
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo guardar la tarea. Inténtalo nuevamente.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formState = ref.watch(taskFormProvider);
+    final isLoading = formState.isLoading;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Nueva tarea', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _titleController,
+                enabled: !isLoading,
+                decoration: const InputDecoration(
+                  labelText: 'Título',
+                  hintText: '¿Qué necesitas hacer?',
+                  border: OutlineInputBorder(),
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                maxLength: 100,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'El título es obligatorio.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                enabled: !isLoading,
+                decoration: const InputDecoration(
+                  labelText: 'Descripción',
+                  hintText: 'Agrega una descripción (opcional)',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                maxLines: 3,
+                maxLength: 500,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: isLoading ? null : _createTask,
+                child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Guardar tarea'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

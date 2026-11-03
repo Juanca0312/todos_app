@@ -28,7 +28,12 @@ class TasksPage extends ConsumerWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            //TODO: Implementar la lógica para agregar una nueva tarea.
+            showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => const TaskFormSheet(),
+            );
           },
           child: const Icon(Icons.add),
         ),
