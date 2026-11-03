@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todos_app/core/widgets/app_snackbar.dart';
 
 import 'package:todos_app/domain/params/create_task_params.dart';
 import 'package:todos_app/presentation/providers/task_form_provider.dart';
@@ -35,13 +36,12 @@ class _TaskFormSheetState extends ConsumerState<TaskFormSheet> {
       await ref.read(taskFormProvider.notifier).createTask(params);
 
       if (!mounted) return;
+      AppSnackBar.success(context, message: 'Tarea creada exitosamente.');
       Navigator.of(context).pop();
     } catch (_) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo guardar la tarea. Inténtalo nuevamente.')),
-      );
+      AppSnackBar.error(context, message: 'Error al crear la tarea. Intenta nuevamente.');
     }
   }
 
@@ -66,36 +66,10 @@ class _TaskFormSheetState extends ConsumerState<TaskFormSheet> {
             children: [
               Text('Nueva tarea', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 24),
-              TextFormField(
-                controller: _titleController,
+              _TaskFormFields(
+                titleController: _titleController,
+                descriptionController: _descriptionController,
                 enabled: !isLoading,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: '¿Qué necesitas hacer?',
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 100,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'El título es obligatorio.';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                enabled: !isLoading,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                  hintText: 'Agrega una descripción (opcional)',
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                ),
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: 3,
-                maxLength: 500,
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -112,6 +86,58 @@ class _TaskFormSheetState extends ConsumerState<TaskFormSheet> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TaskFormFields extends StatelessWidget {
+  const _TaskFormFields({
+    required this.titleController,
+    required this.descriptionController,
+    required this.enabled,
+  });
+
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextFormField(
+          controller: titleController,
+          enabled: enabled,
+          decoration: const InputDecoration(
+            labelText: 'Título',
+            hintText: '¿Qué necesitas hacer?',
+            border: OutlineInputBorder(),
+          ),
+          textCapitalization: TextCapitalization.sentences,
+          maxLength: 100,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'El título es obligatorio.';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: descriptionController,
+          enabled: enabled,
+          decoration: const InputDecoration(
+            labelText: 'Descripción',
+            hintText: 'Agrega una descripción (opcional)',
+            border: OutlineInputBorder(),
+            alignLabelWithHint: true,
+          ),
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 3,
+          maxLength: 500,
+        ),
+      ],
     );
   }
 }
